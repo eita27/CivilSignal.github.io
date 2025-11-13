@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Civic Signal - Report & Resolve</title>
+<style>
+  :root {
+    --bg: #f0f4ff;
+    --card: #ffffff;
+    --accent: #007bff;
+    --accent2: #facc15;
+    --muted: #6b7280;
+    --success: #22c55e;
+    --danger: #ef4444;
+  }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(90deg, #007bff, #60a5fa);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  nav {
+    display: flex;
+    justify-content: space-around;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    padding: 10px 0;
+    border-radius: 0 0 20px 20px;
+  }
+
+  .nav-btn {
+    border: none;
+    background: none;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 10px 20px;
+    color: var(--muted);
+    transition: all 0.3s;
+    border-radius: 10px;
+  }
+
+  .nav-btn:hover, .nav-btn.active {
+    background: linear-gradient(90deg, var(--accent2), #fde68a);
+    color: #111;
+    transform: scale(1.05);
+  }
+
+  main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  section.card {
+    display: none;
+    width: 90%;
+    max-width: 600px;
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+    padding: 20px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  section.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  .btn {
+    background: linear-gradient(90deg, var(--accent), #60a5fa);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+  }
+
+  input, textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  footer {
+    text-align: center;
+    padding: 15px;
+    background: #007bff;
+    color: white;
+    border-radius: 20px 20px 0 0;
+    font-size: 0.9rem;
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f43f5e, #f59e0b);
+    margin: 0 auto 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .issue-image {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+
+  .delete-btn {
+    background: var(--danger);
+    margin-top: 5px;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>🌆 Civic Signal</h1>
+    <p>Connecting Citizens with Their Local Government</p>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" data-page="home">🏠 Home</button>
+    <button class="nav-btn" data-page="report">📝 Report Issue</button>
+    <button class="nav-btn" data-page="issues">📋 View Issues</button>
+    <button class="nav-btn" data-page="profile">👤 Profile</button>
+  </nav>
+
+  <main>
+    <section id="home" class="card active">
+      <h2>Welcome to Civic Signal</h2>
+      <p>Empower your voice! Report local issues like broken pavements, streetlight problems, or waste management concerns directly to your city officials.</p>
+      <button class="btn" id="homeReportBtn">📝 Report a New Issue</button>
+    </section>
+
+    <section id="report" class="card">
+      <h2>Report an Issue</h2>
+      <form id="reportForm">
+        <input id="issueTitle" type="text" placeholder="Issue Title" required>
+        <textarea id="issueDesc" placeholder="Describe the problem..." rows="4" required></textarea>
+        <input id="issueImage" type="file" accept="image/*">
+        <button type="submit" class="btn">Submit Report</button>
+      </form>
+    </section>
+
+    <section id="issues" class="card">
+      <h2>Reported Issues</h2>
+      <div id="issueList"></div>
+    </section>
+
+    <section id="profile" class="card">
+      <div class="avatar"></div>
+      <h2>Your Profile</h2>
+      <form id="profileForm">
+        <label>Name:</label>
+        <input id="userName" type="text" placeholder="Enter your name" required>
+        <label>Email:</label>
+        <input id="userEmail" type="email" placeholder="Enter your email" required>
+        <label>Phone Number:</label>
+        <input id="userPhone" type="tel" placeholder="09XXXXXXXXX" pattern="^09\d{9}$" title="Enter a valid PH phone number" required>
+        <button type="submit" class="btn">Save Profile</button>
+      </form>
+      <div id="profileDetails" style="display:none; text-align:center;">
+        <h3>👤 Profile Details</h3>
+        <p><b>Name:</b> <span id="displayName"></span></p>
+        <p><b>Email:</b> <span id="displayEmail"></span></p>
+        <p><b>Phone:</b> <span id="displayPhone"></span></p>
+        <button id="editProfileBtn" class="btn">Edit Profile</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Civic Signal | Empowering Citizens for Better Communities</p>
+  </footer>
+
+  <script>
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('section');
+    const issueList = document.getElementById('issueList');
+    const reportForm = document.getElementById('reportForm');
+    const profileForm = document.getElementById('profileForm');
+    const profileDetails = document.getElementById('profileDetails');
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const homeReportBtn = document.getElementById('homeReportBtn');
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-page');
+        sections.forEach(sec => sec.classList.remove('active'));
+        navButtons.forEach(b => b.classList.remove('active'));
+        document.getElementById(target).classList.add('active');
+        btn.classList.add('active');
+      });
+    });
+
+    // Home button navigates to Report Issue
+    homeReportBtn.addEventListener('click', () => {
+      document.querySelector('[data-page="report"]').click();
+    });
+
+    // Handle issue reporting
+    reportForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('issueTitle').value;
+      const desc = document.getElementById('issueDesc').value;
+      const fileInput = document.getElementById('issueImage');
+      const file = fileInput.files[0];
+
+      const issueCard = document.createElement('div');
+      issueCard.classList.add('card');
+      issueCard.style.background = '#fef9c3';
+      issueCard.style.marginBottom = '10px';
+
+      let fileHTML = '';
+      if(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+          fileHTML = `<img src='${e.target.result}' class='issue-image'>`;
+          issueCard.innerHTML = `<p>🚧 <b>${title}</b></p><p>${desc}</p>${fileHTML}<p>Status: <b style='color:var(--danger)'>Pending</b></p>`;
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = '🗑️ Delete Issue';
+          deleteBtn.classList.add('btn', 'delete-btn');
+          deleteBtn.addEventListener('click', () => issueCard.remove());
+          issueCard.appendChild(deleteBtn);
+        }
+        reader.readAsDataURL(file);
+      } else {
+        issueCard.innerHTML = `<p>🚧 <b>${title}</b></p><p>${desc}</p><p>Status: <b style='color:var(--danger)'>Pending</b></p>`;
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '🗑️ Delete Issue';
+        deleteBtn.classList.add('btn', 'delete-btn');
+        deleteBtn.addEventListener('click', () => issueCard.remove());
+        issueCard.appendChild(deleteBtn);
+      }
+
+      issueList.prepend(issueCard);
+      reportForm.reset();
+      document.querySelector('[data-page="issues"]').click();
+    });
+
+    // Profile setup and saving
+    profileForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('userName').value;
+      const email = document.getElementById('userEmail').value;
+      const phone = document.getElementById('userPhone').value;
+
+      document.getElementById('displayName').textContent = name;
+      document.getElementById('displayEmail').textContent = email;
+      document.getElementById('displayPhone').textContent = phone;
+
+      profileForm.style.display = 'none';
+      profileDetails.style.display = 'block';
+    });
+
+    // Edit profile
+    editProfileBtn.addEventListener('click', () => {
+      document.getElementById('userName').value = document.getElementById('displayName').textContent;
+      document.getElementById('userEmail').value = document.getElementById('displayEmail').textContent;
+      document.getElementById('userPhone').value = document.getElementById('displayPhone').textContent;
+      profileForm.style.display = 'block';
+      profileDetails.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
